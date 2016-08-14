@@ -81,14 +81,11 @@ public class LineChartView: UIView {
         }
     }
     
-    @IBInspectable public var lineAnimationDuration: CFTimeInterval = 1 
+    @IBInspectable public var lineAnimationDuration: CFTimeInterval = 1
     
     @IBInspectable public var chartInset: CGFloat = 15 {
         willSet {
             if newValue != chartInset {
-                #if !TARGET_INTERFACE_BUILDER
-                    calculate()
-                #endif
                 setNeedsDisplay()
             }
         }
@@ -110,8 +107,19 @@ public class LineChartView: UIView {
     private var lines: [Line] = [Line]()
     private var lineLayers = [CAShapeLayer]()
     
+    convenience public init() {
+        self.init(frame: CGRectZero)
+    }
+    
     override public init(frame: CGRect) {
         super.init(frame: frame)
+        backgroundColor = UIColor.clearColor()
+        #if TARGET_INTERFACE_BUILDER
+            for i in 0...10 {
+                xLabelTitles.append(String(i))
+            }
+            addLine([0, 10, 100, 120, 150, 200, 300, 400, 450, 500], color: nil, lineWidth: nil)
+        #endif
         calculate()
     }
     
@@ -121,15 +129,7 @@ public class LineChartView: UIView {
     }
     
     override public func drawRect(rect: CGRect) {
-        #if TARGET_INTERFACE_BUILDER
-            for i in 0...10 {
-                xLabelTitles.append(String(i))
-            }
-            addLine([0, 10, 100, 120, 150, 200, 300, 400, 450, 500], color: nil, lineWidth: nil)
-
-            calculate()
-        #endif
-        
+        calculate()
         for layer in lineLayers {
             layer.removeFromSuperlayer()
         }
@@ -152,7 +152,6 @@ public class LineChartView: UIView {
         let lColor = (color != nil) ? color! : UIColor(red:0.42, green:0.63, blue:0.33, alpha:1.0)
         let width = lineWidth != nil ? lineWidth! : 2
         lines.append(Line.init(color: lColor, lineWidth: width, points: nil))
-        calculate()
         setNeedsDisplay()
     }
     
@@ -293,7 +292,7 @@ public class LineChartView: UIView {
             let title = xLabelTitles[inx]
             let textAlign = NSMutableParagraphStyle.init()
             textAlign.alignment = .Center
-            NSString.init(string: String(Int(title)!)).drawInRect(rect, withAttributes: [NSForegroundColorAttributeName: labelY.color, NSFontAttributeName: UIFont.systemFontOfSize(9), NSParagraphStyleAttributeName:
+            NSString.init(string: title).drawInRect(rect, withAttributes: [NSForegroundColorAttributeName: labelY.color, NSFontAttributeName: UIFont.systemFontOfSize(9), NSParagraphStyleAttributeName:
                 textAlign])
             
         }
