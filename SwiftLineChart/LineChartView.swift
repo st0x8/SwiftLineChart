@@ -83,7 +83,7 @@ public class LineChartView: UIView {
     
     @IBInspectable public var lineAnimationDuration: CFTimeInterval = 1
     
-    @IBInspectable public var chartInset: CGFloat = 15 {
+    @IBInspectable public var chartInset: CGFloat = 18 {
         willSet {
             if newValue != chartInset {
                 setNeedsDisplay()
@@ -222,7 +222,7 @@ public class LineChartView: UIView {
         gridX = Grid.init(color: gridColor, lines: gridXLines)
         labelX = LabelXY.init(color: labelColor, postions: labelXRect)
         
-        axis = Axis.init(color: axisColor, leftTop: CGPointMake(originX, chartInset), leftBottom: CGPointMake(originX, chartInset + chartHeight), rightEnd: CGPointMake(frame.width - chartInset, chartInset + chartHeight))
+        axis = Axis.init(color: axisColor, leftTop: CGPointMake(originX, chartInset), leftBottom: CGPointMake(originX, chartInset + chartHeight), rightEnd: CGPointMake(originX + chartWidth, chartInset + chartHeight))
         
         //Lines
         var maxYAxisValue = yLabelValues.maxElement()
