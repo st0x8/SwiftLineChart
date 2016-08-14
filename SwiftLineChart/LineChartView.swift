@@ -96,7 +96,7 @@ public class LineChartView: UIView {
     
     private var lineValues = [[CGFloat]]()
     
-    private var chartLeftInset: CGFloat = 32
+
     private var chartHeight: CGFloat!
     private var chartWidth : CGFloat!
     private var gridX: Grid!
@@ -125,6 +125,7 @@ public class LineChartView: UIView {
     
     required public init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
+        backgroundColor = UIColor.clearColor()
         calculate()
     }
     
@@ -183,17 +184,18 @@ public class LineChartView: UIView {
     }
     
     private func calculate() {
-        chartWidth = frame.width - chartLeftInset - chartInset
+        let leftInset: CGFloat = 5
+        chartWidth = frame.width - chartInset * 2 - leftInset
         chartHeight = frame.height - chartInset * 2
-        
+        let originX: CGFloat = chartInset + leftInset * 2
         //Y
         var gridYLines = [(CGPoint, CGPoint)]()
         var labelYRect = [CGRect]()
         let gapY = chartHeight / CGFloat(yLabelValues.count - 1)
         for (inx, _) in yLabelValues.enumerate() {
             let index = CGFloat(inx)
-            gridYLines.append((CGPointMake(chartLeftInset, index * gapY + chartInset), CGPointMake(chartWidth + chartLeftInset, index * gapY + chartInset)))
-            let rect = CGRectMake(0, index * gapY + chartInset-5, chartLeftInset - 5, 10)
+            gridYLines.append((CGPointMake(originX, index * gapY + chartInset), CGPointMake(chartWidth + originX, index * gapY + chartInset)))
+            let rect = CGRectMake(0, index * gapY + chartInset-leftInset, originX - leftInset, 10)
             labelYRect.append(rect)
         }
         
@@ -212,15 +214,15 @@ public class LineChartView: UIView {
         let bottomLabelY = chartHeight + chartInset  + 3
         for index in 0..<maxCount {
             let i = CGFloat(index)
-            gridXLines.append((CGPointMake(i * gapX + chartLeftInset, chartInset), CGPointMake(i * gapX + chartLeftInset, chartHeight + chartInset)))
-            let rect = CGRectMake(i * gapX + chartLeftInset - gapX/2, bottomLabelY, gapX, 10)
+            gridXLines.append((CGPointMake(i * gapX + originX, chartInset), CGPointMake(i * gapX + originX, chartHeight + chartInset)))
+            let rect = CGRectMake(i * gapX + originX - gapX/2, bottomLabelY, gapX, 10)
             labelXRect.append(rect)
             
         }
         gridX = Grid.init(color: gridColor, lines: gridXLines)
         labelX = LabelXY.init(color: labelColor, postions: labelXRect)
         
-        axis = Axis.init(color: axisColor, leftTop: CGPointMake(chartLeftInset, chartInset), leftBottom: CGPointMake(chartLeftInset, chartInset + chartHeight), rightEnd: CGPointMake(frame.width - chartInset, chartInset + chartHeight))
+        axis = Axis.init(color: axisColor, leftTop: CGPointMake(originX, chartInset), leftBottom: CGPointMake(originX, chartInset + chartHeight), rightEnd: CGPointMake(frame.width - chartInset, chartInset + chartHeight))
         
         //Lines
         var maxYAxisValue = yLabelValues.maxElement()
@@ -232,7 +234,7 @@ public class LineChartView: UIView {
             var points = [CGPoint]()
             for (lInx, value) in values.enumerate() {
                 let y = chartHeight - (value / maxYAxisValue! * chartHeight) + chartInset
-                let point = CGPointMake(CGFloat(lInx) * gapX + chartLeftInset, y)
+                let point = CGPointMake(CGFloat(lInx) * gapX + originX, y)
                 points.append(point)
             }
             lines[inx].points = points
